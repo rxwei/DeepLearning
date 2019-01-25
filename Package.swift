@@ -23,17 +23,23 @@ let package = Package(
         .library(
             name: "DeepLearning",
             targets: ["DeepLearning"]),
+        .executable(name: "MNIST",
+                    targets: ["MNIST"]),
     ],
     dependencies: [],
     targets: [
         .target(
             name: "DeepLearning",
             dependencies: []),
+        .target(
+            name: "MNIST",
+            dependencies: ["DeepLearning"]),
         .testTarget(
             name: "DeepLearningTests",
             dependencies: ["DeepLearning"]),
         .testTarget(
-            name: "MNIST",
+            name: "MNISTTests",
             dependencies: ["DeepLearning"]),
-    ]
+    ],
+    swiftLanguageVersions: [.v4_2]
 )

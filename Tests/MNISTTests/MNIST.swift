@@ -16,6 +16,8 @@ import XCTest
 import Python
 @testable import DeepLearning
 
+infix operator .== : ComparisonPrecedence
+
 let gzip = Python.import("gzip")
 let np = Python.import("numpy")
 
@@ -51,14 +53,12 @@ func readMNIST(imagesFile: String, labelsFile: String)
 struct MNISTClassifier: Layer {
     var l1, l2: Dense<Float>
     init(hiddenSize: Int) {
-        l1 = Dense<Float>(inputSize: 784, outputSize: hiddenSize,
-                          activation: sigmoid)
-        l2 = Dense<Float>(inputSize: hiddenSize, outputSize: 10,
-                          activation: logSoftmax)
+        l1 = Dense<Float>(inputSize: 784, outputSize: hiddenSize)
+        l2 = Dense<Float>(inputSize: hiddenSize, outputSize: 10)
     }
     func applied(to input: Tensor<Float>) -> Tensor<Float> {
-        let h1 = l1.applied(to: input)
-        return l2.applied(to: h1)
+        let h1 = sigmoid(l1.applied(to: input))
+        return logSoftmax(l2.applied(to: h1))
     }
 }
 

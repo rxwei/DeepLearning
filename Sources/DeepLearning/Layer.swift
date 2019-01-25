@@ -69,8 +69,6 @@ public struct Dense<Scalar>: Layer
 
     public var weight: Tensor<Scalar>
     public var bias: Tensor<Scalar>
-    public typealias Activation = @autodiff (Tensor<Scalar>) -> Tensor<Scalar>
-    @noDerivative public let activation: Activation
 
     // FIXME(SR-9716): Remove this once the bug is fixed or worked around.
     public var allKeyPaths: [PartialKeyPath<Dense>] {
@@ -79,17 +77,17 @@ public struct Dense<Scalar>: Layer
 
     @differentiable(wrt: (self, input))
     public func applied(to input: Tensor<Scalar>) -> Tensor<Scalar> {
-        return activation(matmul(input, weight) + bias)
+        return matmul(input, weight) + bias
     }
 }
 
 public extension Dense where Scalar : BinaryFloatingPoint,
                              Scalar.RawSignificand : FixedWidthInteger {
-    init(inputSize: Int, outputSize: Int, activation: @escaping Activation) {
+    // init(inputSize: Int, outputSize: Int, activation: @escaping Activation = { $0 }) {
+    init(inputSize: Int, outputSize: Int) {
         self.init(weight: Tensor(
                   glorotUniform: [Int32(inputSize), Int32(outputSize)]),
-                  bias: Tensor(zeros: [Int32(outputSize)]),
-                  activation: activation)
+                  bias: Tensor(zeros: [Int32(outputSize)]))
     }
 }
 
