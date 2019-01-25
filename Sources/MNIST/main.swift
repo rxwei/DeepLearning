@@ -55,6 +55,7 @@ struct MNISTClassifier: Layer {
         l1 = Dense<Float>(inputSize: 784, outputSize: hiddenSize)
         l2 = Dense<Float>(inputSize: hiddenSize, outputSize: 10)
     }
+    @differentiable(wrt: (self, input))
     func applied(to input: Tensor<Float>) -> Tensor<Float> {
         let h1 = sigmoid(l1.applied(to: input))
         return logSoftmax(l2.applied(to: h1))
