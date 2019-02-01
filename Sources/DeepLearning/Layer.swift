@@ -63,6 +63,7 @@ public class Parameter<T : TensorFlowScalar> {
     }
 }
 
+/*
 @_fixed_layout
 public struct Dense<Scalar>: Layer
     where Scalar: FloatingPoint & Differentiable & TensorFlowScalar {
@@ -90,6 +91,29 @@ public extension Dense where Scalar : BinaryFloatingPoint,
                   glorotUniform: [Int32(inputSize), Int32(outputSize)]),
                   bias: Tensor(zeros: [Int32(outputSize)]),
                   activation: activation)
+    }
+}
+*/
+
+@_fixed_layout
+public struct Dense<Scalar>: Layer
+    where Scalar: FloatingPoint & Differentiable & TensorFlowScalar {
+
+    public var weight: Tensor<Scalar>
+    public var bias: Tensor<Scalar>
+
+    @differentiable(wrt: (self, input))
+    public func applied(to input: Tensor<Scalar>) -> Tensor<Scalar> {
+        return matmul(input, weight) + bias
+    }
+}
+
+public extension Dense where Scalar : BinaryFloatingPoint,
+                             Scalar.RawSignificand : FixedWidthInteger {
+    init(inputSize: Int, outputSize: Int) {
+        self.init(weight: Tensor(
+                  glorotUniform: [Int32(inputSize), Int32(outputSize)]),
+                  bias: Tensor(zeros: [Int32(outputSize)]))
     }
 }
 
